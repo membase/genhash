@@ -2,7 +2,6 @@
  * Generic hash table implementation.
  *
  * Copyright (c) 2006  Dustin Sallings <dustin@spy.net>
- * arch-tag: F52F1945-83FC-4FF4-9F40-38E5BBA662FB
  */
 
 #ifndef GENHASH_H

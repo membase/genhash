@@ -1,7 +1,5 @@
 /*
  * Copyright (c) 2006  Dustin Sallings <dustin@spy.net>
-
- * arch-tag: D3539587-3E66-4DB3-9DB6-DDF5EF5651B9
  */
 
 #include <stdio.h>
