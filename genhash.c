@@ -19,7 +19,7 @@ static int prime_size_table[]={
 };
 
 static int
-estimateTableSize(int est)
+estimate_table_size(int est)
 {
 	int rv=0;
 	int magn=0;
@@ -35,7 +35,7 @@ estimateTableSize(int est)
 	return rv;
 }
 
-genhash_t* genHashInit(int est, struct hash_ops ops)
+genhash_t* genhash_init(int est, struct hash_ops ops)
 {
 	genhash_t* rv=NULL;
 	int size=0;
@@ -47,7 +47,7 @@ genhash_t* genHashInit(int est, struct hash_ops ops)
 	assert(ops.freeKey != NULL);
 	assert(ops.freeValue != NULL);
 
-	size=estimateTableSize(est);
+	size=estimate_table_size(est);
 	rv=calloc(1, sizeof(genhash_t)
 		+ (size * sizeof(struct genhash_entry_t *)));
 	assert(rv != NULL);
@@ -58,10 +58,10 @@ genhash_t* genHashInit(int est, struct hash_ops ops)
 }
 
 static void
-freeBucket(genhash_t* h, struct genhash_entry_t* b)
+free_bucket(genhash_t* h, struct genhash_entry_t* b)
 {
 	if(b != NULL) {
-		freeBucket(h, b->next);
+		free_bucket(h, b->next);
 		h->ops.freeKey(b->key);
 		h->ops.freeValue(b->value);
 		free(b);
@@ -69,19 +69,19 @@ freeBucket(genhash_t* h, struct genhash_entry_t* b)
 }
 
 void
-genHashFree(genhash_t* h)
+genhash_free(genhash_t* h)
 {
 	if(h != NULL) {
 		int i=0;
 		for(i=0; i<h->size; i++) {
-			freeBucket(h, h->buckets[i]);
+			free_bucket(h, h->buckets[i]);
 		}
 		free(h);
 	}
 }
 
 void
-genHashStore(genhash_t *h, const void* k, const void* v)
+genhash_store(genhash_t *h, const void* k, const void* v)
 {
 	int n=0;
 	struct genhash_entry_t *p;
@@ -103,7 +103,7 @@ genHashStore(genhash_t *h, const void* k, const void* v)
 }
 
 static struct genhash_entry_t *
-genHashFindEntry(genhash_t *h, const void* k)
+genhash_find_entry(genhash_t *h, const void* k)
 {
 	int n=0;
 	struct genhash_entry_t *p;
@@ -119,12 +119,12 @@ genHashFindEntry(genhash_t *h, const void* k)
 }
 
 void*
-genHashFind(genhash_t *h, const void* k)
+genhash_find(genhash_t *h, const void* k)
 {
 	struct genhash_entry_t *p;
 	void *rv=NULL;
 
-	p=genHashFindEntry(h, k);
+	p=genhash_find_entry(h, k);
 
 	if(p) {
 		rv=p->value;
@@ -132,36 +132,36 @@ genHashFind(genhash_t *h, const void* k)
 	return rv;
 }
 
-enum UpdateType
-genHashUpdate(genhash_t* h, const void* k, const void* v)
+enum update_type
+genhash_update(genhash_t* h, const void* k, const void* v)
 {
 	struct genhash_entry_t *p;
-	enum UpdateType rv=0;
+	enum update_type rv=0;
 
-	p=genHashFindEntry(h, k);
+	p=genhash_find_entry(h, k);
 
 	if(p) {
 		h->ops.freeValue(p->value);
 		p->value=h->ops.dupValue(v);
 		rv=MODIFICATION;
 	} else {
-		genHashStore(h, k, v);
+		genhash_store(h, k, v);
 		rv=NEW;
 	}
 
 	return rv;
 }
 
-enum UpdateType
-genHashFuncUpdate(genhash_t* h, const void* k,
+enum update_type
+genhash_fun_update(genhash_t* h, const void* k,
 	void *(*upd)(const void *, const void *),
 	void (*fr)(void*), 
 	const void *def)
 {
 	struct genhash_entry_t *p;
-	enum UpdateType rv=0;
+	enum update_type rv=0;
 
-	p=genHashFindEntry(h, k);
+	p=genhash_find_entry(h, k);
 
 	if(p) {
 		void *newValue=upd(k, p->value);
@@ -171,7 +171,7 @@ genHashFuncUpdate(genhash_t* h, const void* k,
 		rv=MODIFICATION;
 	} else {
 		void *newValue=upd(k, def);
-		genHashStore(h, k, newValue);
+		genhash_store(h, k, newValue);
 		fr(newValue);
 		rv=NEW;
 	}
@@ -180,7 +180,7 @@ genHashFuncUpdate(genhash_t* h, const void* k,
 }
 
 int
-genHashDelete(genhash_t* h, const void* k)
+genhash_delete(genhash_t* h, const void* k)
 {
 	struct genhash_entry_t *deleteme=NULL;
 	int n=0;
@@ -217,17 +217,17 @@ genHashDelete(genhash_t* h, const void* k)
 }
 
 int
-genHashDeleteAll(genhash_t* h, const void* k)
+genhash_delete_all(genhash_t* h, const void* k)
 {
 	int rv=0;
-	while(genHashDelete(h, k) == 1) {
+	while(genhash_delete(h, k) == 1) {
 		rv++;
 	}
 	return rv;
 }
 
 void
-genHashIter(genhash_t* h,
+genhash_iter(genhash_t* h,
 	void (*iterfunc)(const void* key, const void* val, void *arg), void *arg)
 {
 	int i=0;
@@ -242,31 +242,31 @@ genHashIter(genhash_t* h,
 }
 
 static void
-countEntries(const void *key, const void *val, void *arg)
+count_entries(const void *key, const void *val, void *arg)
 {
 	int *count=(int *)arg;
 	(*count)++;
 }
 
 int
-genHashSize(genhash_t* h) {
+genhash_size(genhash_t* h) {
 	int rv=0;
 	assert(h != NULL);
-	genHashIter(h, countEntries, &rv);
+	genhash_iter(h, count_entries, &rv);
 	return rv;
 }
 
 int
-genHashSizeForKey(genhash_t* h, const void* k)
+genhash_size_for_key(genhash_t* h, const void* k)
 {
 	int rv=0;
 	assert(h != NULL);
-	genHashIterKey(h, k, countEntries, &rv);
+	genhash_iter_key(h, k, count_entries, &rv);
 	return rv;
 }
 
 void
-genHashIterKey(genhash_t* h, const void* key,
+genhash_iter_key(genhash_t* h, const void* key,
 	void (*iterfunc)(const void* key, const void* val, void *arg), void *arg)
 {
 	int n=0;
@@ -285,7 +285,7 @@ genHashIterKey(genhash_t* h, const void* key,
 }
 
 int
-genHashStringHash(const void* p)
+genhash_string_hash(const void* p)
 {
 	int rv=5381;
 	int i=0;

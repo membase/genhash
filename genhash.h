@@ -56,76 +56,76 @@ struct __genhash_struct {
 	struct genhash_entry_t *buckets[0];
 };
 
-enum UpdateType { MODIFICATION, NEW };
+enum update_type { MODIFICATION, NEW };
 
 /**
  * Create a new generic hashtable.
  */
-genhash_t* genHashInit(int, struct hash_ops);
+genhash_t* genhash_init(int, struct hash_ops);
 /**
  * Free a gen hash.
  */
-void genHashFree(genhash_t*);
+void genhash_free(genhash_t*);
 
 /**
  * Store an item.
  */
-void genHashStore(genhash_t*, const void*, const void*);
+void genhash_store(genhash_t*, const void*, const void*);
 /**
  * Get an item.
  */
-void* genHashFind(genhash_t*, const void*);
+void* genhash_find(genhash_t*, const void*);
 /**
  * Delete an item.
  */
-int genHashDelete(genhash_t*, const void*);
+int genhash_delete(genhash_t*, const void*);
 /**
  * Delete all mappings of a given key.
  */
-int genHashDeleteAll(genhash_t*, const void*);
+int genhash_delete_all(genhash_t*, const void*);
 
 /**
  * Update an item in-place.
  */
-enum UpdateType genHashUpdate(genhash_t*, const void*, const void*);
+enum update_type genhash_update(genhash_t*, const void*, const void*);
 
 /**
  * Update an item in-place.
  *
  * @param h hashtable
- * @param updateFunc function that will be called with the key and current
+ * @param update_fun function that will be called with the key and current
  *        value.  Should return the new value.
- * @param freeFunc function to free the return value returned by the update
+ * @param free_fun function to free the return value returned by the update
  *        function
  * @param def default value
  */
-enum UpdateType genHashFuncUpdate(genhash_t*, const void*,
+enum update_type genhash_fun_update(genhash_t*, const void*,
 	void *(*upd)(const void *, const void *), void (*fr)(void*),
 	const void *def);
 
 /**
  * Iterate all keys and values in a hash table.
  */
-void genHashIter(genhash_t*,
+void genhash_iter(genhash_t*,
 	void (*iterfunc)(const void* key, const void* val, void *arg), void *arg);
 /**
  * Iterate all values for a given key in a hash table.
  */
-void genHashIterKey(genhash_t*, const void* key,
+void genhash_iter_key(genhash_t*, const void* key,
 	void (*iterfunc)(const void* key, const void* val, void *arg), void *arg);
 
 /**
  * Get the total number of entries in this hash table.
  */
-int genHashSize(genhash_t*);
+int genhash_size(genhash_t*);
 
 /**
  * Get the total number of entries in this hash table that map to the given
  * key.
  */
-int genHashSizeForKey(genhash_t*, const void*);
+int genhash_size_for_key(genhash_t*, const void*);
 
 /** Convenient hash function for strings */
-int genHashStringHash(const void*);
+int genhash_string_hash(const void*);
 
 #endif /* GENHASH_H */

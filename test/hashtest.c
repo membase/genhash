@@ -17,7 +17,7 @@ static char *kvs[]={
 };
 
 static int
-strEq(const void* p1, const void*p2)
+str_eq(const void* p1, const void*p2)
 {
 	char *str1=(char *)p1;
 	char *str2=(char *)p2;
@@ -27,7 +27,7 @@ strEq(const void* p1, const void*p2)
 }
 
 void*
-hashStrDup(const void *p)
+hash_str_dup(const void *p)
 {
 	char *str=(char *)p;
 	assert(str != NULL);
@@ -35,38 +35,38 @@ hashStrDup(const void *p)
 }
 
 void
-freeStr(void *p)
+free_str(void *p)
 {
 	free(p);
 }
 
 static struct hash_ops
-getStringHashOps()
+get_string_hash_ops()
 {
 	struct hash_ops rv;
-	rv.hashfunc=genHashStringHash;
-	rv.hasheq=strEq;
-	rv.dupKey=hashStrDup;
-	rv.dupValue=hashStrDup;
-	rv.freeKey=freeStr;
-	rv.freeValue=freeStr;
+	rv.hashfunc=genhash_string_hash;
+	rv.hasheq=str_eq;
+	rv.dupKey=hash_str_dup;
+	rv.dupValue=hash_str_dup;
+	rv.freeKey=free_str;
+	rv.freeValue=free_str;
 
 	return rv;
 }
 
 static void
-testConstruct()
+test_construct()
 {
 	genhash_t* h=NULL;
 
-	h=genHashInit(4, getStringHashOps());
-	genHashFree(h);
+	h=genhash_init(4, get_string_hash_ops());
+	genhash_free(h);
 }
 
 static void
-assertHashVal(char *expected, genhash_t* h, const char* key)
+assert_hash_val(char *expected, genhash_t* h, const char* key)
 {
-	char *found=(char*)genHashFind(h, key);
+	char *found=(char*)genhash_find(h, key);
 
 	if(expected == NULL) {
 		if(found != NULL) {
@@ -84,96 +84,96 @@ assertHashVal(char *expected, genhash_t* h, const char* key)
 }
 
 static genhash_t*
-getTestHash()
+get_test_hash()
 {
 	genhash_t* h=NULL;
 	int i=0;
 
-	h=genHashInit(4, getStringHashOps());
+	h=genhash_init(4, get_string_hash_ops());
 	for(i=0; i<26; i++) {
-		genHashStore(h, kvs[i], kvs[i]);
-		assertHashVal(kvs[i], h, kvs[i]);
+		genhash_store(h, kvs[i], kvs[i]);
+		assert_hash_val(kvs[i], h, kvs[i]);
 	}
 
 	return h;
 }
 
 static void
-testSimple()
+test_simple()
 {
-	genhash_t* h=getTestHash();
+	genhash_t* h=get_test_hash();
 	int i=0;
 
 	for(i=0; i<13; i++) {
-		int deleted=genHashDelete(h, kvs[i*2]);
+		int deleted=genhash_delete(h, kvs[i*2]);
 		assert(deleted == 1);
-		deleted=genHashDelete(h, kvs[i*2]);
+		deleted=genhash_delete(h, kvs[i*2]);
 		assert(deleted == 0);
 	}
 	for(i=0; i<26; i++) {
 		if(i % 2 == 0) {
-			assertHashVal(NULL, h, kvs[i]);
+			assert_hash_val(NULL, h, kvs[i]);
 		} else {
-			assertHashVal(kvs[i], h, kvs[i]);
+			assert_hash_val(kvs[i], h, kvs[i]);
 		}
 	}
-	genHashFree(h);
+	genhash_free(h);
 }
 
 static void
-testUpdate()
+test_update()
 {
-	genhash_t* h=getTestHash();
+	genhash_t* h=get_test_hash();
 	int type=0, i=0;
 
 	for(i=0; i<26; i++) {
-		assertHashVal(kvs[i], h, kvs[i]);
-		type=genHashUpdate(h, kvs[i], "updated");
+		assert_hash_val(kvs[i], h, kvs[i]);
+		type=genhash_update(h, kvs[i], "updated");
 		assert(type == MODIFICATION);
-		assertHashVal("updated", h, kvs[i]);
+		assert_hash_val("updated", h, kvs[i]);
 	}
-	type=genHashUpdate(h, "newtest", "new");
+	type=genhash_update(h, "newtest", "new");
 	assert(type == NEW);
-	assertHashVal("new", h, "newtest");
+	assert_hash_val("new", h, "newtest");
 
-	genHashFree(h);
+	genhash_free(h);
 }
 
 static void
-testMultipleKeys()
+test_multiple_keys()
 {
-	genhash_t* h=genHashInit(4, getStringHashOps());
+	genhash_t* h=genhash_init(4, get_string_hash_ops());
 	int deleted=0;
 
-	assertHashVal(NULL, h, "x");
-	genHashStore(h, "x", "a");
-	genHashStore(h, "x", "b");
+	assert_hash_val(NULL, h, "x");
+	genhash_store(h, "x", "a");
+	genhash_store(h, "x", "b");
 
-	assertHashVal("b", h, "x");
-	deleted=genHashDelete(h, "x");
+	assert_hash_val("b", h, "x");
+	deleted=genhash_delete(h, "x");
 	assert(deleted == 1);
-	assertHashVal("a", h, "x");
-	deleted=genHashDelete(h, "x");
+	assert_hash_val("a", h, "x");
+	deleted=genhash_delete(h, "x");
 	assert(deleted == 1);
-	assertHashVal(NULL, h, "x");
-	deleted=genHashDelete(h, "x");
+	assert_hash_val(NULL, h, "x");
+	deleted=genhash_delete(h, "x");
 	assert(deleted == 0);
 
-	genHashStore(h, "x", "a");
-	genHashStore(h, "x", "b");
-	genHashStore(h, "y", "yz");
+	genhash_store(h, "x", "a");
+	genhash_store(h, "x", "b");
+	genhash_store(h, "y", "yz");
 
-	assert(genHashSize(h) == 3);
-	assert(genHashSizeForKey(h, "x") == 2);
+	assert(genhash_size(h) == 3);
+	assert(genhash_size_for_key(h, "x") == 2);
 
-	deleted=genHashDeleteAll(h, "x");
+	deleted=genhash_delete_all(h, "x");
 	assert(deleted == 2);
 
-	genHashFree(h);
+	genhash_free(h);
 }
 
 static void*
-updateFunction(const void* k, const void*v)
+update_fun(const void* k, const void*v)
 {
 	char *rv=NULL;
 
@@ -192,33 +192,33 @@ updateFunction(const void* k, const void*v)
 }
 
 static void
-testFunctionUpdate()
+test_function_update()
 {
-	genhash_t* h=genHashInit(4, getStringHashOps());
+	genhash_t* h=genhash_init(4, get_string_hash_ops());
 	int type=0;
 
-	assertHashVal(NULL, h, "x");
-	type=genHashFuncUpdate(h, "x", updateFunction, freeStr, NULL);
+	assert_hash_val(NULL, h, "x");
+	type=genhash_fun_update(h, "x", update_fun, free_str, NULL);
 	assert(type == NEW);
-	assertHashVal("", h, "x");
-	type=genHashFuncUpdate(h, "x", updateFunction, freeStr, NULL);
+	assert_hash_val("", h, "x");
+	type=genhash_fun_update(h, "x", update_fun, free_str, NULL);
 	assert(type == MODIFICATION);
-	assertHashVal("x", h, "x");
-	type=genHashFuncUpdate(h, "x", updateFunction, freeStr, NULL);
+	assert_hash_val("x", h, "x");
+	type=genhash_fun_update(h, "x", update_fun, free_str, NULL);
 	assert(type == MODIFICATION);
-	assertHashVal("xx", h, "x");
+	assert_hash_val("xx", h, "x");
 
-	assert(genHashSize(h) == 1);
+	assert(genhash_size(h) == 1);
 
-	genHashFree(h);
+	genhash_free(h);
 }
 
 int main(int argc, char **argv)
 {
-	testConstruct();
-	testSimple();
-	testUpdate();
-	testMultipleKeys();
-	testFunctionUpdate();
+	test_construct();
+	test_simple();
+	test_update();
+	test_multiple_keys();
+	test_function_update();
 	return 0;
 }
