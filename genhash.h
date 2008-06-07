@@ -87,7 +87,7 @@ int genHashDeleteAll(genhash_t*, const void*);
 /**
  * Update an item in-place.
  */
-int genHashUpdate(genhash_t*, const void*, const void*);
+enum UpdateType genHashUpdate(genhash_t*, const void*, const void*);
 
 /**
  * Update an item in-place.
@@ -99,7 +99,7 @@ int genHashUpdate(genhash_t*, const void*, const void*);
  *        function
  * @param def default value
  */
-int genHashFuncUpdate(genhash_t*, const void*,
+enum UpdateType genHashFuncUpdate(genhash_t*, const void*,
 	void *(*upd)(const void *, const void *), void (*fr)(void*),
 	const void *def);
 

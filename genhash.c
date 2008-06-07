@@ -132,11 +132,11 @@ genHashFind(genhash_t *h, const void* k)
 	return rv;
 }
 
-int
+enum UpdateType
 genHashUpdate(genhash_t* h, const void* k, const void* v)
 {
 	struct genhash_entry_t *p;
-	int rv=0;
+	enum UpdateType rv=0;
 
 	p=genHashFindEntry(h, k);
 
@@ -152,14 +152,14 @@ genHashUpdate(genhash_t* h, const void* k, const void* v)
 	return rv;
 }
 
-int
+enum UpdateType
 genHashFuncUpdate(genhash_t* h, const void* k,
 	void *(*upd)(const void *, const void *),
 	void (*fr)(void*), 
 	const void *def)
 {
 	struct genhash_entry_t *p;
-	int rv=0;
+	enum UpdateType rv=0;
 
 	p=genHashFindEntry(h, k);
 
