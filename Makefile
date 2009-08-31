@@ -9,6 +9,10 @@ all: $(THELIB)
 clean:
 	rm $(OBJS) $(THELIB)
 
+.PHONY: docs
+docs:
+	(cat Doxyfile ; echo "PROJECT_NUMBER=`git describe`") | doxygen -
+
 genhash.o: genhash.c genhash.h
 
 $(THELIB): $(OBJS)
