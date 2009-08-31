@@ -8,9 +8,9 @@
 #define GENHASH_H 1
 
 struct genhash_entry_t {
-	void *key;
-	void *value;
-	struct genhash_entry_t *next;
+    void *key;
+    void *value;
+    struct genhash_entry_t *next;
 };
 
 struct __genhash_struct;
@@ -23,36 +23,36 @@ typedef struct __genhash_struct genhash_t;
  * Operations on keys and values in the hash table.
  */
 struct hash_ops {
-	/**
+    /**
      * Function to compute a hash for the given value.
-	 */
-	int   (*hashfunc)(const void *);
-	/**
+     */
+    int   (*hashfunc)(const void *);
+    /**
      * Function that returns true if the given keys are equal.
-	 */
-	int   (*hasheq)(const void *, const void *);
-	/**
+     */
+    int   (*hasheq)(const void *, const void *);
+    /**
      * Function to duplicate a key for storage.
-	 */
-	void* (*dupKey)(const void *);
-	/**
+     */
+    void* (*dupKey)(const void *);
+    /**
      * Function to duplicate a value for storage.
-	 */
-	void* (*dupValue)(const void *);
-	/**
+     */
+    void* (*dupValue)(const void *);
+    /**
      * Function to free a key.
-	 */
-	void  (*freeKey)(void *);
-	/**
+     */
+    void  (*freeKey)(void *);
+    /**
      * Function to free a value.
-	 */
-	void  (*freeValue)(void *);
+     */
+    void  (*freeValue)(void *);
 };
 
 struct __genhash_struct {
-	size_t size;
-	struct hash_ops ops;
-	struct genhash_entry_t *buckets[0];
+    size_t size;
+    struct hash_ops ops;
+    struct genhash_entry_t *buckets[0];
 };
 
 enum update_type { MODIFICATION, NEW };
@@ -99,19 +99,20 @@ enum update_type genhash_update(genhash_t*, const void*, const void*);
  * @param def default value
  */
 enum update_type genhash_fun_update(genhash_t*, const void*,
-	void *(*upd)(const void *, const void *), void (*fr)(void*),
-	const void *def);
+                                    void *(*upd)(const void *, const void *),
+                                    void (*fr)(void*),
+                                    const void *def);
 
 /**
  * Iterate all keys and values in a hash table.
  */
 void genhash_iter(genhash_t*,
-	void (*iterfunc)(const void* key, const void* val, void *arg), void *arg);
+                  void (*iterfunc)(const void* key, const void* val, void *arg), void *arg);
 /**
  * Iterate all values for a given key in a hash table.
  */
 void genhash_iter_key(genhash_t*, const void* key,
-	void (*iterfunc)(const void* key, const void* val, void *arg), void *arg);
+                      void (*iterfunc)(const void* key, const void* val, void *arg), void *arg);
 
 /**
  * Get the total number of entries in this hash table.
