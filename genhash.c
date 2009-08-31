@@ -23,12 +23,9 @@ estimate_table_size(int est)
     int rv=0;
     int magn=0;
     assert(est > 0);
-
     magn=(int)log((double)est)/log(2);
     magn--;
-    if(magn < 0 ) {
-        magn=0;
-    }
+    magn = (magn < 0) ? 0 : magn;
     assert(magn < (sizeof(prime_size_table) / sizeof(int)));
     rv=prime_size_table[magn];
     return rv;
@@ -38,6 +35,9 @@ genhash_t* genhash_init(int est, struct hash_ops ops)
 {
     genhash_t* rv=NULL;
     int size=0;
+    if (est < 1) {
+        return NULL;
+    }
 
     assert(ops.hashfunc != NULL);
     assert(ops.hasheq != NULL);
