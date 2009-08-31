@@ -119,6 +119,12 @@ test_simple()
 }
 
 static void
+test_free_null()
+{
+    genhash_free(NULL);
+}
+
+static void
 test_update()
 {
     genhash_t* h=get_test_hash();
@@ -140,8 +146,14 @@ test_update()
 static void
 test_multiple_keys()
 {
-    genhash_t* h=genhash_init(4, get_string_hash_ops());
-    int deleted=0;
+    genhash_t* h=genhash_init(0, get_string_hash_ops());
+    int deleted = 0, i = 0;
+
+    /* Pollute the space to allow some hash collisions */
+    for(i=0; i<13; i++) {
+        genhash_store(h, kvs[i], kvs[i]);
+        assert_hash_val(kvs[i], h, kvs[i]);
+    }
 
     assert_hash_val(NULL, h, "x");
     genhash_store(h, "x", "a");
@@ -161,7 +173,7 @@ test_multiple_keys()
     genhash_store(h, "x", "b");
     genhash_store(h, "y", "yz");
 
-    assert(genhash_size(h) == 3);
+    assert(genhash_size(h) == 16);
     assert(genhash_size_for_key(h, "x") == 2);
 
     deleted=genhash_delete_all(h, "x");
@@ -218,5 +230,6 @@ int main(int argc, char **argv)
     test_update();
     test_multiple_keys();
     test_function_update();
+    test_free_null();
     return 0;
 }
