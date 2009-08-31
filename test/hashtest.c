@@ -87,7 +87,7 @@ get_test_hash()
     genhash_t* h=NULL;
     int i=0;
 
-    h=genhash_init(4, get_string_hash_ops());
+    h=genhash_init(26, get_string_hash_ops());
     for(i=0; i<26; i++) {
         genhash_store(h, kvs[i], kvs[i]);
         assert_hash_val(kvs[i], h, kvs[i]);
