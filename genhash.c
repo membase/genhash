@@ -8,6 +8,7 @@
 #include <assert.h>
 
 #include "genhash.h"
+#include "genhash_int.h"
 
 /* Table of 32 primes by their distance from the nearest power of two */
 static int prime_size_table[]={
