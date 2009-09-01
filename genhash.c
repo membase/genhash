@@ -57,25 +57,11 @@ genhash_t* genhash_init(int est, struct hash_ops ops)
     return rv;
 }
 
-static void
-free_bucket(genhash_t* h, struct genhash_entry_t* b)
-{
-    if(b != NULL) {
-        free_bucket(h, b->next);
-        h->ops.freeKey(b->key);
-        h->ops.freeValue(b->value);
-        free(b);
-    }
-}
-
 void
 genhash_free(genhash_t* h)
 {
     if(h != NULL) {
-        int i=0;
-        for(i=0; i<h->size; i++) {
-            free_bucket(h, h->buckets[i]);
-        }
+        genhash_clear(h);
         free(h);
     }
 }
