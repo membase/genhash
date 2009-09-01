@@ -241,6 +241,26 @@ genhash_iter(genhash_t* h,
     }
 }
 
+int
+genhash_clear(genhash_t *h)
+{
+    int i = 0, rv = 0;
+    assert(h != NULL);
+
+    for(i = 0; i < h->size; i++) {
+        while(h->buckets[i]) {
+            struct genhash_entry_t *p = NULL;
+            p = h->buckets[i];
+            h->buckets[i] = p->next;
+            h->ops.freeKey(p->key);
+            h->ops.freeValue(p->value);
+            free(p);
+        }
+    }
+
+    return rv;
+}
+
 static void
 count_entries(const void *key, const void *val, void *arg)
 {

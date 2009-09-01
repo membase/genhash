@@ -191,6 +191,15 @@ void genhash_iter_key(genhash_t *h, const void* key,
 int genhash_size(genhash_t *h);
 
 /**
+ * Remove all items from a genhash.
+ *
+ * @param h the genhash
+ *
+ * @return the number of items removed
+ */
+int genhash_clear(genhash_t *h);
+
+/**
  * Get the total number of entries in this hash table that map to the given
  * key.
  *

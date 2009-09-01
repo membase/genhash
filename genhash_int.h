@@ -13,5 +13,5 @@ struct genhash_entry_t {
 struct _genhash {
     size_t size;
     struct hash_ops ops;
-    struct genhash_entry_t *buckets[0];
+    struct genhash_entry_t *buckets[];
 };

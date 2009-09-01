@@ -232,6 +232,16 @@ test_negative_size()
     assert(h == NULL);
 }
 
+static void
+test_clear()
+{
+    genhash_t* h=get_test_hash();
+    assert(genhash_size(h) == 26);
+    genhash_clear(h);
+    assert(genhash_size(h) == 0);
+    genhash_free(h);
+}
+
 int main(int argc, char **argv)
 {
     test_construct();
@@ -241,5 +251,6 @@ int main(int argc, char **argv)
     test_function_update();
     test_free_null();
     test_negative_size();
+    test_clear();
     return 0;
 }
