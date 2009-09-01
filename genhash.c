@@ -165,6 +165,15 @@ genhash_fun_update(genhash_t* h, const void* k,
     return rv;
 }
 
+static void
+free_item(genhash_t *h, struct genhash_entry_t *i)
+{
+    assert(i);
+    h->ops.freeKey(i->key);
+    h->ops.freeValue(i->value);
+    free(i);
+}
+
 int
 genhash_delete(genhash_t* h, const void* k)
 {
@@ -193,9 +202,7 @@ genhash_delete(genhash_t* h, const void* k)
         }
     }
     if(deleteme != NULL) {
-        h->ops.freeKey(deleteme->key);
-        h->ops.freeValue(deleteme->value);
-        free(deleteme);
+        free_item(h, deleteme);
         rv++;
     }
 
@@ -238,9 +245,7 @@ genhash_clear(genhash_t *h)
             struct genhash_entry_t *p = NULL;
             p = h->buckets[i];
             h->buckets[i] = p->next;
-            h->ops.freeKey(p->key);
-            h->ops.freeValue(p->value);
-            free(p);
+            free_item(h, p);
         }
     }
 
